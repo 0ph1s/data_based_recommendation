@@ -5,9 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 try:
-    # Read Data
     df = pd.read_csv('movies.csv')
-    # Print Data
     ##print(df.head(5))
 except FileNotFoundError:
     print("O arquivo 'movies.csv' não foi encontrado.")
@@ -16,59 +14,71 @@ except pd.errors.EmptyDataError:
 except pd.errors.ParserError:
     print("Erro ao ler o arquivo CSV.")
 
-# Data information
 ##print(df.info())
 
-# Selecting the relevant features for recommendation
-selected_features = ['genres','keywords','tagline','cast','director']
-##print(selected_features)
+recursos_selecionados = ['genres','keywords','tagline','cast','director']
+##print(recursos_selecionados)
 
-# Troca valores null por strings null
-for feature in selected_features:
-    df[feature] = df[feature].fillna('')
+for recurso in recursos_selecionados:
+    df[recurso] = df[recurso].fillna('')
 
-combined_features = df['genres'] + ' ' + df['keywords'] + ' ' + df['tagline'] + ' ' + df['cast'] + ' ' + df['director']
-##print(combined_features)
+recursos_combinados = df['genres'] + ' ' + df['keywords'] + ' ' + df['tagline'] + ' ' + df['cast'] + ' ' + df['director']
+##print(recursos_combinados)
 
-# converting the text data to feature vectors
-vectorizer = TfidfVectorizer()
+vetorizador = TfidfVectorizer()
 
-feature_vectors = vectorizer.fit_transform(combined_features)
+vetores = vetorizador.fit_transform(recursos_combinados)
 
-##print(feature_vectors)
+##print(vetores)
 
-# getting the similarity scores using cosine similarity
-similarity = cosine_similarity(feature_vectors, feature_vectors)
+similaridade = cosine_similarity(vetores, vetores)
 
-##print(similarity)
+##print(similaridade)
 
-# creating a list with all the movie names given in the dataset
-list_of_all_titles = df['title'].tolist()
+lista_de_todos_os_titulos = df['title'].tolist()
 
-movie_name = input(' Enter your favourite movie name : ')
+while True:
+    nome_do_filme = input('\nDigite o nome do filme: ')
 
-list_of_all_titles = df['title'].tolist()
+    while True:
+        try:
+            qnt_recomendacao = int(input('\nQuantas recomendações deseja receber? '))
+            if qnt_recomendacao > 0:
+                break
+            else:
+                print("\nPor favor, insira um número positivo.")
+        except ValueError:
+            print("\nEntrada inválida. Por favor, insira um número inteiro.")
 
-find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
+    encontrar_mais_proximo = difflib.get_close_matches(nome_do_filme, lista_de_todos_os_titulos)
 
-close_match = find_close_match[0]
+    if not encontrar_mais_proximo:
+        print("\nFilme não encontrado. Tente novamente.")
+        continue
 
-index_of_the_movie = df[df.title == close_match]['index'].values[0]
+    titulo_mais_proximo = encontrar_mais_proximo[0]
+    indice_do_filme = df[df.title == titulo_mais_proximo]['index'].values[0]
 
-similarity_score = list(enumerate(similarity[index_of_the_movie]))
+    pontuacao_similaridade = list(enumerate(similaridade[indice_do_filme]))
+    filmes_similares_ordenados = sorted(pontuacao_similaridade, key=lambda x: x[1], reverse=True)
 
-sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True) 
+    print('Filmes sugeridos para você: \n')
 
-print('Filmes sugeridos para você: \n')
+    i = 1
+    for filme in filmes_similares_ordenados:
+        indice = filme[0]
+        titulo_do_indice = df[df.index == indice]['title'].values[0]
+        if i <= qnt_recomendacao:
+            print(i, '.', titulo_do_indice)
+            i += 1
+        if i > qnt_recomendacao:
+            break
 
-i = 1
+    response = input("\nDeseja continuar? ")
 
-for movie in sorted_similar_movies:
-    index = movie[0]
-    title_from_index = df[df.index==index]['title'].values[0]
-    if (i < 6):
-        print(i, '.',title_from_index)
-        i+=1
-
-
+    if response.lower() == 'sim':
+        continue
+    else:
+        print("\nObrigado pela utilização!\n")
+        break
 
