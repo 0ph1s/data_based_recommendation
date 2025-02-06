@@ -9,7 +9,8 @@ This repository contains a **movie recommendation system** built with Python. Th
 - Implements **error handling** for missing files, empty datasets, and incorrect user input.  
 
 ## 📂 Data  
-The script expects a `movies.csv` file containing movie details, including:  
+The script expects a `movies.csv` file containing movie details, including:
+
 - `title`  
 - `genres`  
 - `keywords`  
@@ -26,14 +27,17 @@ The script expects a `movies.csv` file containing movie details, including:
 
 ## 🚀 How to Use  
 1. Clone the repository.  
-2. Install dependencies:  
+2. Install dependencies:
+    
    ```bash
    pip install numpy pandas scikit-learn
    ```
-3. Ensure the `movies.csv` file is present.  
-4. Run the script and input a movie title to receive recommendations.  
+   
+4. Ensure the `movies.csv` file is present.  
+5. Run the script and input a movie title to receive recommendations.  
 
 ## 📊 Example  
+
 ```
 Digite o nome do filme: Inception  
 Quantas recomendações deseja receber? 5  
